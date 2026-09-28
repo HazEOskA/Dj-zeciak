@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="pl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DJ ZET — DJ Console Slice 1 Preview</title>
+    <link rel="stylesheet" href="./src/styles.css" />
+  </head>
+  <body>
+    <div id="app">
+      <header class="topbar">
+        <a
+          class="brand"
+          href="https://djzet-release.vercel.app/"
+          target="_blank"
+          rel="noreferrer"
+        >
+          <img
+            src="https://djzet-release.vercel.app/images/djzet-tag-1.png"
+            alt="DJ ZET"
+          />
+        </a>
+        <nav>
+          <a href="#record-room">RECORD ROOM</a><a href="#console">DJ CONSOLE</a
+          ><a href="#muzyka">MUZYKA</a>
+        </nav>
+        <span class="preview-badge">SLICE 1 / PREVIEW</span>
+      </header>
+      <main>
+        <section class="hero">
+          <div class="hero-copy">
+            <p class="eyebrow">DJ ZET / SZCZECIN / WEB DECKS</p>
+            <h1>PRAWDZIWA<br /><span>KONSOLA</span></h1>
+            <p class="hero-text">
+              Pierwszy działający rdzeń: dwa niezależne decki, Web Audio API,
+              equal-power crossfader i master. Zero fake UI.
+            </p>
+            <a class="cta" href="#console">WEJDŹ NA DECKI ↓</a>
+          </div>
+          <img
+            src="https://djzet-release.vercel.app/images/djzet-hero-dj.jpg"
+            alt="DJ ZET"
+            class="hero-img"
+          />
+        </section>
+
+        <section class="band" id="record-room">
+          <span class="num">01</span>
+          <div>
+            <p class="eyebrow">WINYLE / BITY / PROJEKTY / ARCHIWUM</p>
+            <h2>RECORD <span>ROOM</span></h2>
+            <p>
+              Tu wszystko się zaczyna. W preview dokładamy następny element
+              świata: konsolę, na której naprawdę można miksować dwa źródła
+              audio.
+            </p>
+          </div>
+          <img
+            src="https://djzet-release.vercel.app/images/djzet-vinyl-shelf.jpg"
+            alt="Winyle DJ ZET"
+          />
+        </section>
+
+        <section class="console-section" id="console">
+          <header class="console-head">
+            <span class="num">01.A</span>
+            <div>
+              <p class="eyebrow">DJ ZET / WEB DECKS / LIVE AUDIO ENGINE</p>
+              <h2>DJ <span>CONSOLE</span></h2>
+            </div>
+            <div class="engine" id="engineState">
+              <i></i><span>AUDIO ENGINE INIT</span>
+            </div>
+          </header>
+
+          <div class="rack">
+            <section class="deck" aria-label="Deck A">
+              <div class="deck-top"><span>DECK A</span><i id="ledA"></i></div>
+              <div class="platter">
+                <div class="vinyl"><span>A</span></div>
+              </div>
+              <div class="track">
+                <strong>PROOF LOOP A</strong
+                ><small>ZET DECK ENGINE · 88 BPM</small>
+              </div>
+              <div class="time">
+                <span id="timeA">0:00</span><span id="statusA">PAUZA</span>
+              </div>
+              <button id="playA" class="play" type="button">
+                <b>▶</b><span>PLAY A</span>
+              </button>
+            </section>
+
+            <section class="mixer" aria-label="Mixer">
+              <div class="mixer-brand">
+                <strong>ZET</strong><span>MIXER / 01</span>
+              </div>
+              <label class="master-label"
+                >MASTER <output id="masterOut">90</output></label
+              >
+              <input
+                id="master"
+                class="vertical-range"
+                aria-label="Master volume"
+                type="range"
+                min="0"
+                max="1"
+                step="0.01"
+                value="0.9"
+              />
+              <div class="meter"><i id="meterA"></i><i id="meterB"></i></div>
+              <div class="gain-readout">
+                <span>A <b id="gainA">0.707</b></span
+                ><span>B <b id="gainB">0.707</b></span>
+              </div>
+              <label class="xfade-label" for="crossfader">CROSSFADER</label>
+              <input
+                id="crossfader"
+                class="xfade"
+                aria-label="Crossfader Deck A do Deck B"
+                type="range"
+                min="0"
+                max="1"
+                step="0.001"
+                value="0.5"
+              />
+              <div class="xfade-legend">
+                <span>A</span><span>CENTER</span><span>B</span>
+              </div>
+              <p id="mixState" class="mix-state">A + B / CENTER</p>
+            </section>
+
+            <section class="deck" aria-label="Deck B">
+              <div class="deck-top"><span>DECK B</span><i id="ledB"></i></div>
+              <div class="platter">
+                <div class="vinyl vinyl-b"><span>B</span></div>
+              </div>
+              <div class="track">
+                <strong>PROOF LOOP B</strong
+                ><small>ZET DECK ENGINE · 96 BPM</small>
+              </div>
+              <div class="time">
+                <span id="timeB">0:00</span><span id="statusB">PAUZA</span>
+              </div>
+              <button id="playB" class="play" type="button">
+                <b>▶</b><span>PLAY B</span>
+              </button>
+            </section>
+          </div>
+
+          <footer class="console-foot">
+            <span>2 × MEDIA ELEMENT SOURCE</span>
+            <span>EQUAL-POWER CROSSFADER</span>
+            <span>WEB AUDIO API</span>
+            <span id="masterState">MASTER 90%</span>
+          </footer>
+        </section>
+
+        <section class="band feature" id="muzyka">
+          <span class="num">02</span>
+          <img
+            src="https://djzet-release.vercel.app/images/djzet-album-boom-bap.jpg"
+            alt="Boom Bap"
+          />
+          <div>
+            <p class="eyebrow">FEATURED RELEASE</p>
+            <h2>BOOM <span>BAP</span></h2>
+            <p>Major SPZ × Stitches · scratches: DJ Zet</p>
+            <a
+              class="cta"
+              href="https://djzet-release.vercel.app/#muzyka"
+              target="_blank"
+              rel="noreferrer"
+              >ORYGINALNA STRONA ↗</a
+            >
+          </div>
+        </section>
+      </main>
+      <footer class="page-foot">
+        <span>DJ ZET WEB DECKS · SLICE 1</span
+        ><span>PREVIEW ONLY · PRODUCTION UNCHANGED</span>
+      </footer>
+    </div>
+    <script type="module" src="./src/main.ts"></script>
+  </body>
+</html>

@@ -1,0 +1,45 @@
+[
+  {
+    "name": "Mix two decks with the crossfader",
+    "sanity": true,
+    "viewport": "desktop",
+    "covers": [
+      "Deck A playback",
+      "Deck B playback",
+      "equal-power crossfader",
+      "audio engine initialization"
+    ],
+    "description": "Verifies both decks can be started independently and the visible mixer state responds to crossfader movement.",
+    "steps": [
+      "Click PLAY A",
+      "Click PLAY B",
+      "Move the CROSSFADER fully toward A and then fully toward B"
+    ],
+    "expected": "Both deck buttons can enter PAUSE state, AUDIO ENGINE READY is visible, and mixer state changes between DECK A / FULL and DECK B / FULL."
+  },
+  {
+    "name": "Mute and restore master output",
+    "viewport": "desktop",
+    "covers": ["master volume", "mute guardrail"],
+    "description": "Verifies the master control can deliberately mute the mixer and restore output without affecting deck controls.",
+    "steps": ["Start Deck A", "Move MASTER to 0", "Move MASTER back above 0"],
+    "expected": "The footer shows MASTER MUTE at zero and returns to a numeric MASTER percentage after the volume is restored."
+  },
+  {
+    "name": "Use both decks on mobile",
+    "viewport": "mobile",
+    "covers": [
+      "mobile responsive console",
+      "Deck A playback",
+      "Deck B playback",
+      "mobile crossfader"
+    ],
+    "description": "Verifies the stacked mobile console remains usable and exposes both deck and mixer controls.",
+    "steps": [
+      "Scroll to DJ CONSOLE",
+      "Tap PLAY A and PLAY B",
+      "Move the CROSSFADER from center toward B"
+    ],
+    "expected": "Deck A, mixer, and Deck B are stacked without horizontal overflow, both play buttons remain usable, and mixer state changes toward B."
+  }
+]
