@@ -6,6 +6,7 @@ on:
       - feature/djzet-flx10-engine
     paths:
       - 'preview/**'
+      - 'backend/**'
       - '.github/workflows/djzet-audio-ci.yml'
   workflow_dispatch:
 
@@ -32,3 +33,17 @@ jobs:
         run: npm run test:audio
       - name: Build frontendu
         run: npm run build
+
+  project-api:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Testy integracyjne zapisu projektów
+        run: npm test
