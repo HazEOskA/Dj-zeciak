@@ -1,45 +1,71 @@
 [
   {
-    "name": "Mix two decks with the crossfader",
+    "name": "Brak fikcyjnych utworów; dostępny import własnego audio",
     "sanity": true,
     "viewport": "desktop",
     "covers": [
-      "Deck A playback",
-      "Deck B playback",
-      "equal-power crossfader",
-      "audio engine initialization"
+      "Prawdziwy import audio",
+      "Bezpieczny stan początkowy",
+      "Wyświetlanie dwóch decków i 4 kanałów"
     ],
-    "description": "Verifies both decks can be started independently and the visible mixer state responds to crossfader movement.",
+    "description": "Weryfikuje, że konsola nie udaje odtwarzania bez muzyki i ma cztery kanały.",
     "steps": [
-      "Click PLAY A",
-      "Click PLAY B",
-      "Move the CROSSFADER fully toward A and then fully toward B"
+      "Otwórz stronę",
+      "Sprawdź DECK 1 i DECK 2 oraz CH 1, CH 2, CH 3, CH 4",
+      "Kliknij PLAY na lewym decku bez pliku"
     ],
-    "expected": "Both deck buttons can enter PAUSE state, AUDIO ENGINE READY is visible, and mixer state changes between DECK A / FULL and DECK B / FULL."
+    "expected": "Zamiast odtwarzania pojawia się komunikat o konieczności wczytania pliku. Przycisk + WCZYTAJ UTWÓR jest widoczny."
   },
   {
-    "name": "Mute and restore master output",
+    "name": "Warstwy 1/3 i 2/4 działają niezależnie",
     "viewport": "desktop",
-    "covers": ["master volume", "mute guardrail"],
-    "description": "Verifies the master control can deliberately mute the mixer and restore output without affecting deck controls.",
-    "steps": ["Start Deck A", "Move MASTER to 0", "Move MASTER back above 0"],
-    "expected": "The footer shows MASTER MUTE at zero and returns to a numeric MASTER percentage after the volume is restored."
+    "covers": [
+      "Layer switching",
+      "Deck 3 i 4",
+      "Stan kanałów"
+    ],
+    "description": "Przełączenie fizycznych stron zachowuje ich niezależne zestawy kontroli.",
+    "steps": [
+      "Kliknij przycisk 3 w lewym module LAYER",
+      "Kliknij przycisk 4 w prawym module LAYER",
+      "Sprawdź nagłówki obu kontrolerów",
+      "Przełącz z powrotem na 1 i 2"
+    ],
+    "expected": "Nagłówki zmieniają się na DECK 3 i DECK 4, a następnie wracają na DECK 1 i DECK 2."
   },
   {
-    "name": "Use both decks on mobile",
+    "name": "Sampler i tryb Hot Cue reagują na interakcje",
     "viewport": "mobile",
     "covers": [
-      "mobile responsive console",
-      "Deck A playback",
-      "Deck B playback",
-      "mobile crossfader"
+      "8 padów samplera",
+      "Przełączanie trybów",
+      "Wykrywanie braku pliku"
     ],
-    "description": "Verifies the stacked mobile console remains usable and exposes both deck and mixer controls.",
+    "description": "Kliknięcie padów uruchamia dźwięki samplera; Hot Cue nie tworzy fałszywego punktu bez pliku.",
     "steps": [
-      "Scroll to DJ CONSOLE",
-      "Tap PLAY A and PLAY B",
-      "Move the CROSSFADER from center toward B"
+      "Na telefonie przewiń do padów lewego decku",
+      "Kliknij pad KICK",
+      "Sprawdź komunikat Sampler",
+      "Zmień tryb na HOT CUE i kliknij pierwszy pad bez wczytanego utworu"
     ],
-    "expected": "Deck A, mixer, and Deck B are stacked without horizontal overflow, both play buttons remain usable, and mixer state changes toward B."
+    "expected": "Widoczny komunikat od samplera i ostrzeżenie o konieczności wczytania utworu dla HOT CUE."
+  },
+  {
+    "name": "Fadery, FX, crossfader i instrukcja",
+    "viewport": "desktop",
+    "covers": [
+      "Crossfader",
+      "FX toggle",
+      "Master volume",
+      "Instrukcja"
+    ],
+    "description": "Panel miksowania działa interaktywnie, aktualizuje wartości i ujawnia opis rzeczywistych ograniczeń.",
+    "steps": [
+      "Przesuń MASTER na około połowę skali",
+      "Włącz przycisk FX OFF",
+      "Przesuń crossfader od A do B",
+      "Kliknij ? INSTRUKCJA"
+    ],
+    "expected": "Master pokazuje około 50%, przycisk FX pokazuje FX ON, crossfader zmienia położenie i widoczny jest opis konsoli."
   }
 ]
