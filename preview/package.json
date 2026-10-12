@@ -8,7 +8,7 @@
     "build": "npm run typecheck && npm run test:audio && vite build",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
-    "test:audio": "node --experimental-strip-types --test tests/audio-engine.test.mjs"
+    "test:audio": "node ./node_modules/esbuild/bin/esbuild tests/audio-engine.test.mjs --bundle --platform=node --format=esm --outfile=tests/.audio-engine.bundle.mjs && node --test tests/.audio-engine.bundle.mjs"
   },
   "dependencies": {
     "lucide": "^0.469.0"
