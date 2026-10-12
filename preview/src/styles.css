@@ -1208,3 +1208,9 @@ button:disabled {
     gap:5px
   }
 }
+
+/* Audio engine V1 — przycisk nagrywania mastera */
+.record-button { border-color: #6e3444; color: #faa1ad; white-space: nowrap; }
+.record-button.is-recording { color: #fff; background: #a42c45; border-color: #ed788e; animation: rec-pulse 1.2s ease-in-out infinite; }
+@keyframes rec-pulse { 50% { box-shadow: 0 0 0 5px #ed51621a; } }
+@media (max-width: 420px) { .record-button { font-size: 8px; padding: 7px 5px; } }
