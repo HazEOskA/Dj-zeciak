@@ -1,186 +1,49 @@
 <!doctype html>
 <html lang="pl">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>DJ ZET — DJ Console Slice 1 Preview</title>
-    <link rel="stylesheet" href="./src/styles.css" />
-  </head>
-  <body>
-    <div id="app">
-      <header class="topbar">
-        <a
-          class="brand"
-          href="https://djzet-release.vercel.app/"
-          target="_blank"
-          rel="noreferrer"
-        >
-          <img
-            src="https://djzet-release.vercel.app/images/djzet-tag-1.png"
-            alt="DJ ZET"
-          />
-        </a>
-        <nav>
-          <a href="#record-room">RECORD ROOM</a><a href="#console">DJ CONSOLE</a
-          ><a href="#muzyka">MUZYKA</a>
-        </nav>
-        <span class="preview-badge">SLICE 1 / PREVIEW</span>
-      </header>
-      <main>
-        <section class="hero">
-          <div class="hero-copy">
-            <p class="eyebrow">DJ ZET / SZCZECIN / WEB DECKS</p>
-            <h1>PRAWDZIWA<br /><span>KONSOLA</span></h1>
-            <p class="hero-text">
-              Pierwszy działający rdzeń: dwa niezależne decki, Web Audio API,
-              equal-power crossfader i master. Zero fake UI.
-            </p>
-            <a class="cta" href="#console">WEJDŹ NA DECKI ↓</a>
-          </div>
-          <img
-            src="https://djzet-release.vercel.app/images/djzet-hero-dj.jpg"
-            alt="DJ ZET"
-            class="hero-img"
-          />
-        </section>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#090c12">
+  <meta name="description" content="DJ ZET Performance Station — czterokanałowa konsola DJ w przeglądarce. Lokalne pliki, dwa kontrolery, sampler i mikser Web Audio.">
+  <title>DJ ZET | Performance Station</title>
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <div class="brand"><div class="brand-icon">Z<span>✳</span></div><div><strong>DJ ZET</strong><small>PERFORMANCE SYSTEM</small></div></div>
+    <div class="top-center"><span class="tiny-dot"></span> BROWSER DJ WORKSTATION <span class="version">/ V2.0</span></div>
+    <div class="top-actions"><span class="signal"><i id="audio-led"></i><span id="audio-label">AUDIO GOTOWE</span></span><button id="help-button" class="top-help" type="button">? <span>INSTRUKCJA</span></button></div>
+  </header>
 
-        <section class="band" id="record-room">
-          <span class="num">01</span>
-          <div>
-            <p class="eyebrow">WINYLE / BITY / PROJEKTY / ARCHIWUM</p>
-            <h2>RECORD <span>ROOM</span></h2>
-            <p>
-              Tu wszystko się zaczyna. W preview dokładamy następny element
-              świata: konsolę, na której naprawdę można miksować dwa źródła
-              audio.
-            </p>
-          </div>
-          <img
-            src="https://djzet-release.vercel.app/images/djzet-vinyl-shelf.jpg"
-            alt="Winyle DJ ZET"
-          />
-        </section>
+  <section class="intro">
+    <div><div class="eyebrow"><span class="line"></span> ENGINEERED FOR THE MIX</div><h1>TAKE CONTROL<span class="stop">.</span></h1><p>Cztery kanały. Dwa kontrolery. Jedna scena. <em>Wrzuć własne utwory i miksuj na żywo.</em></p></div>
+    <div class="intro-right"><span>01 / LOCAL-FIRST AUDIO</span><span>02 / 4-CHANNEL MIXER</span><span>03 / 8-PAD SAMPLER</span></div>
+  </section>
 
-        <section class="console-section" id="console">
-          <header class="console-head">
-            <span class="num">01.A</span>
-            <div>
-              <p class="eyebrow">DJ ZET / WEB DECKS / LIVE AUDIO ENGINE</p>
-              <h2>DJ <span>CONSOLE</span></h2>
-            </div>
-            <div class="engine" id="engineState">
-              <i></i><span>AUDIO ENGINE INIT</span>
-            </div>
-          </header>
-
-          <div class="rack">
-            <section class="deck" aria-label="Deck A">
-              <div class="deck-top"><span>DECK A</span><i id="ledA"></i></div>
-              <div class="platter">
-                <div class="vinyl"><span>A</span></div>
-              </div>
-              <div class="track">
-                <strong>PROOF LOOP A</strong
-                ><small>ZET DECK ENGINE · 88 BPM</small>
-              </div>
-              <div class="time">
-                <span id="timeA">0:00</span><span id="statusA">PAUZA</span>
-              </div>
-              <button id="playA" class="play" type="button">
-                <b>▶</b><span>PLAY A</span>
-              </button>
-            </section>
-
-            <section class="mixer" aria-label="Mixer">
-              <div class="mixer-brand">
-                <strong>ZET</strong><span>MIXER / 01</span>
-              </div>
-              <label class="master-label"
-                >MASTER <output id="masterOut">90</output></label
-              >
-              <input
-                id="master"
-                class="vertical-range"
-                aria-label="Master volume"
-                type="range"
-                min="0"
-                max="1"
-                step="0.01"
-                value="0.9"
-              />
-              <div class="meter"><i id="meterA"></i><i id="meterB"></i></div>
-              <div class="gain-readout">
-                <span>A <b id="gainA">0.707</b></span
-                ><span>B <b id="gainB">0.707</b></span>
-              </div>
-              <label class="xfade-label" for="crossfader">CROSSFADER</label>
-              <input
-                id="crossfader"
-                class="xfade"
-                aria-label="Crossfader Deck A do Deck B"
-                type="range"
-                min="0"
-                max="1"
-                step="0.001"
-                value="0.5"
-              />
-              <div class="xfade-legend">
-                <span>A</span><span>CENTER</span><span>B</span>
-              </div>
-              <p id="mixState" class="mix-state">A + B / CENTER</p>
-            </section>
-
-            <section class="deck" aria-label="Deck B">
-              <div class="deck-top"><span>DECK B</span><i id="ledB"></i></div>
-              <div class="platter">
-                <div class="vinyl vinyl-b"><span>B</span></div>
-              </div>
-              <div class="track">
-                <strong>PROOF LOOP B</strong
-                ><small>ZET DECK ENGINE · 96 BPM</small>
-              </div>
-              <div class="time">
-                <span id="timeB">0:00</span><span id="statusB">PAUZA</span>
-              </div>
-              <button id="playB" class="play" type="button">
-                <b>▶</b><span>PLAY B</span>
-              </button>
-            </section>
-          </div>
-
-          <footer class="console-foot">
-            <span>2 × MEDIA ELEMENT SOURCE</span>
-            <span>EQUAL-POWER CROSSFADER</span>
-            <span>WEB AUDIO API</span>
-            <span id="masterState">MASTER 90%</span>
-          </footer>
-        </section>
-
-        <section class="band feature" id="muzyka">
-          <span class="num">02</span>
-          <img
-            src="https://djzet-release.vercel.app/images/djzet-album-boom-bap.jpg"
-            alt="Boom Bap"
-          />
-          <div>
-            <p class="eyebrow">FEATURED RELEASE</p>
-            <h2>BOOM <span>BAP</span></h2>
-            <p>Major SPZ × Stitches · scratches: DJ Zet</p>
-            <a
-              class="cta"
-              href="https://djzet-release.vercel.app/#muzyka"
-              target="_blank"
-              rel="noreferrer"
-              >ORYGINALNA STRONA ↗</a
-            >
-          </div>
-        </section>
-      </main>
-      <footer class="page-foot">
-        <span>DJ ZET WEB DECKS · SLICE 1</span
-        ><span>PREVIEW ONLY · PRODUCTION UNCHANGED</span>
-      </footer>
+  <main class="station" aria-label="Konsola DJ ZET">
+    <div class="console-top"><div class="console-model"><span class="status-square"></span> ZET / PERFORMANCE CONTROLLER</div><span class="console-top-right">4 CH / 2 CONTROL SURFACES <b>●</b> WEB AUDIO ENGINE</span></div>
+    <div class="hardware">
+      <section class="deck deck-left" id="deck-left" aria-label="Lewy odtwarzacz DJ"></section>
+      <section class="mixer" aria-label="Czterokanałowy mikser">
+        <div class="mixer-header"><div><span class="eyebrow">CENTRAL UNIT</span><h2>ZET <span>4CH MIXER</span></h2></div><div class="mixer-head-dot">◉</div></div>
+        <div class="channels" id="channels"></div>
+        <div class="master-zone">
+          <div class="master-info"><span>MASTER OUTPUT</span><strong id="master-level">85%</strong></div>
+          <div class="master-meter" id="master-meter" aria-label="Poziom sygnału master"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+          <label class="master-slider">MASTER <input id="master" type="range" min="0" max="1" step=".01" value=".85" aria-label="Głośność master"></label>
+          <div class="fx-panel"><div class="fx-top"><span>BEAT FX / ECHO</span><button id="fx-toggle" class="fx-button" type="button" aria-pressed="false">FX OFF</button></div><label>WET <input id="fx-wet" type="range" min="0" max=".55" step=".01" value=".22"><span id="fx-val">22%</span></label></div>
+          <div class="xfade-zone"><div class="xfade-title"><span>ASSIGN A</span><strong>CROSSFADER</strong><span>ASSIGN B</span></div><input id="crossfader" type="range" min="0" max="1" value=".5" step=".001" aria-label="Crossfader A do B"><div class="xfade-limits"><b>A</b><b>●</b><b>B</b></div></div>
+        </div>
+        <div class="mixer-foot"><span>4 INDEPENDENT CHANNELS</span><span>44.1K / WEB AUDIO</span></div>
+      </section>
+      <section class="deck deck-right" id="deck-right" aria-label="Prawy odtwarzacz DJ"></section>
     </div>
-    <script type="module" src="./src/main.ts"></script>
-  </body>
+    <div class="console-bottom"><span>DESIGNED FOR DJ ZET</span><span>NO CLOUD UPLOADS · YOUR AUDIO STAYS LOCAL</span><span>V2 / PREVIEW</span></div>
+  </main>
+  <div class="below"><div class="message"><span class="live-indicator"></span><span id="message-text" role="status" aria-live="polite">Gotowe. Wczytaj plik audio na Deck 1 lub Deck 2, aby rozpocząć.</span></div><div class="helper-strip"><span><kbd>SPACJA</kbd> PLAY / PAUZA LEWY</span><span><kbd>Q</kbd> PLAY / PAUZA PRAWY</span><span><kbd>1–8</kbd> SAMPLER</span><span><kbd>SHIFT + PAD</kbd> USUŃ HOT CUE</span></div></div>
+  <section class="guide" id="guide" hidden><h2>Szybki start</h2><p>Wybierz <strong>WCZYTAJ UTWÓR</strong> w każdym odtwarzaczu, a potem PLAY. Przełączniki 1/3 i 2/4 obsługują cztery niezależne kanały. Pokrętła EQ, filtry, fadery i crossfader przetwarzają rzeczywisty dźwięk przez Web Audio API. Kołem jog przesuwaj odtwarzanie, waveform służy do szukania pozycji. W trybie HOT CUE kliknij pad, by zapisać i odtworzyć punkt. W trybie SAMPLER pady odtwarzają dźwięki, możesz też załadować własne sample. BPM ustaw ręcznie lub przez TAP; SYNC zmienia prędkość odtwarzania (nie zachowuje wysokości dźwięku). Audio nie jest wysyłane na serwer.</p><p class="guide-note">Uwaga: do grania potrzebne są własne pliki audio i zgoda na ich wykorzystanie. Przeglądarka wymaga pierwszego kliknięcia do uruchomienia silnika.</p></section>
+  <footer class="site-footer"><span>© 2026 DJ ZET — PERFORMANCE LAB</span><a href="https://djzet-release.vercel.app/" target="_blank" rel="noopener noreferrer">WRÓĆ DO STRONY DJ ZET ↗</a><span>WORK IN PROGRESS / PREVIEW</span></footer>
+</div>
+<script type="module" src="/src/main.ts"></script>
+</body>
 </html>
