@@ -1,16 +1,10 @@
 import './styles.css';
+import { DJMixerEngine, type AudioChannelNodes } from './audio/mixer';
 
 type Side = 'left' | 'right';
 type DeckId = 1 | 2 | 3 | 4;
 type PadMode = 'sample' | 'cue';
-interface AudioNodes {
-  low: BiquadFilterNode;
-  mid: BiquadFilterNode;
-  high: BiquadFilterNode;
-  filter: BiquadFilterNode;
-  volume: GainNode;
-  analyser: AnalyserNode;
-}
+type AudioNodes = AudioChannelNodes;
 interface Deck {
   id: DeckId;
   audio: HTMLAudioElement;
@@ -47,10 +41,8 @@ const presetNames = ['KICK', 'SNARE', 'CLOSED HAT', 'CLAP', 'OPEN HAT', 'TOM', '
 const sampleBuffers: Array<AudioBuffer | null> = Array(8).fill(null);
 const sampleNames = [...presetNames];
 let master: GainNode | null = null;
-let xfA: GainNode | null = null;
-let xfB: GainNode | null = null;
 let masterAnalyser: AnalyserNode | null = null;
-let echoSend: GainNode | null = null;
+const mixer = ctx ? new DJMixerEngine(ctx) : null;
 let fxEnabled = false;
 let lastTap: number[] = [];
 let playheadRaf = 0;
@@ -60,40 +52,18 @@ const otherSide = (side: Side): Side => side === 'left' ? 'right' : 'left';
 const canPlay = (d: Deck) => Boolean(d.url && Number.isFinite(d.audio.duration) && d.audio.duration > 0);
 
 function createEngine(): void {
-  if (!ctx) { flash('Twoja przeglądarka nie obsługuje Web Audio API.'); return; }
-  master = ctx.createGain();
-  master.gain.value = .85;
-  masterAnalyser = ctx.createAnalyser();
-  masterAnalyser.fftSize = 512;
-  master.connect(masterAnalyser).connect(ctx.destination);
-  xfA = ctx.createGain();
-  xfB = ctx.createGain();
-  xfA.connect(master);
-  xfB.connect(master);
-  const delay = ctx.createDelay(1);
-  delay.delayTime.value = .285;
-  const feedback = ctx.createGain();
-  feedback.gain.value = .31;
-  echoSend = ctx.createGain();
-  echoSend.gain.value = 0;
-  xfA.connect(echoSend);
-  xfB.connect(echoSend);
-  echoSend.connect(delay);
-  delay.connect(master);
-  delay.connect(feedback).connect(delay);
+  if (!ctx || !mixer) {
+    flash('Twoja przeglądarka nie obsługuje Web Audio API.');
+    return;
+  }
+  master = mixer.master;
+  masterAnalyser = mixer.meter;
   [1, 2, 3, 4].forEach((num) => {
     const id = num as DeckId;
     const audio = document.createElement('audio');
     audio.preload = 'metadata';
-    const source = ctx.createMediaElementSource(audio);
-    const low = ctx.createBiquadFilter(); low.type = 'lowshelf'; low.frequency.value = 220;
-    const mid = ctx.createBiquadFilter(); mid.type = 'peaking'; mid.frequency.value = 1100; mid.Q.value = 1;
-    const high = ctx.createBiquadFilter(); high.type = 'highshelf'; high.frequency.value = 4500;
-    const filter = ctx.createBiquadFilter(); filter.type = 'allpass';
-    const volume = ctx.createGain(); volume.gain.value = .8;
-    const analyser = ctx.createAnalyser(); analyser.fftSize = 256;
-    source.connect(low).connect(mid).connect(high).connect(filter).connect(volume).connect(analyser).connect(id === 1 || id === 3 ? xfA! : xfB!);
-    const d: Deck = { id, audio, url: null, title: 'NIE WCZYTANO UTWORU', bpm: 120, pitch: 0, sync: false, cue: null, hotCues: Array(8).fill(null), loopStart: null, loopEnd: null, peaks: [], nodes: { low, mid, high, filter, volume, analyser } };
+    const nodes = mixer.attachDeck(id, audio);
+    const d: Deck = { id, audio, url: null, title: 'NIE WCZYTANO UTWORU', bpm: 120, pitch: 0, sync: false, cue: null, hotCues: Array(8).fill(null), loopStart: null, loopEnd: null, peaks: [], nodes };
     decks.set(id, d);
     audio.addEventListener('loadedmetadata', () => refreshDeck(id));
     audio.addEventListener('timeupdate', () => {
@@ -103,7 +73,6 @@ function createEngine(): void {
     audio.addEventListener('ended', () => refreshDeck(id));
     audio.addEventListener('error', () => flash('Nie można odtworzyć pliku na kanale ' + id + '. Spróbuj MP3 lub WAV.'));
   });
-  setCrossfade(.5);
   $('audio-label').textContent = ctx.state === 'running' ? 'SILNIK AKTYWNY' : 'KLIKNIJ PLAY';
 }
 async function startAudio(): Promise<boolean> {
@@ -246,9 +215,7 @@ function rate(d: Deck): void {
   d.audio.playbackRate = clamp(target / Math.max(1,d.bpm),.5,2);
 }
 function setCrossfade(x: number): void {
-  if (!xfA || !xfB || !ctx) return;
-  xfA.gain.setTargetAtTime(Math.cos(x*Math.PI/2),ctx.currentTime,.012);
-  xfB.gain.setTargetAtTime(Math.sin(x*Math.PI/2),ctx.currentTime,.012);
+  mixer?.setCrossfader(x);
 }
 function updatePads(side: Side): void {
   const d = activeDeck(side);
@@ -401,15 +368,13 @@ function bindMixer(): void {
     const index=Number(input.dataset.ch||input.dataset.channelVolume) as DeckId;
     const d=decks.get(index);
     if(!d)return;
-    if(input.dataset.channelVolume!==undefined){d.nodes.volume.gain.value=Number(input.value);return;}
+    if(input.dataset.channelVolume!==undefined){mixer?.setChannelVolume(index, Number(input.value));return;}
     const kind=input.dataset.knob;
     const value=Number(input.value);
     if(kind==='filter'){
-      d.nodes.filter.type=Math.abs(value)<3?'allpass':value<0?'lowpass':'highpass';
-      d.nodes.filter.frequency.value=value<0?clamp(18000*Math.pow(80,.01*value),150,18000):clamp(40*Math.pow(200,.01*value),40,18000);
-      d.nodes.filter.Q.value=.9;
+      mixer?.setFilter(index, value);
     }else if(kind==='low'||kind==='mid'||kind==='high'){
-      d.nodes[kind].gain.value=value;
+      mixer?.setEQ(index, kind, value);
     }
     const knob=$('knob-'+index+'-'+kind);
     knob.style.setProperty('--rot',String(kind==='filter'?value*1.25:value*10.4)+'deg');
@@ -419,13 +384,13 @@ function bindMixer(): void {
   });
   $('master').addEventListener('input',()=>{
     const value=Number(($('master') as HTMLInputElement).value);
-    if(master)master.gain.value=value;
+    mixer?.setMasterVolume(value);
     $('master-level').textContent=Math.round(value*100)+'%';
   });
   $('fx-wet').addEventListener('input',()=>{
     const value=Number(($('fx-wet') as HTMLInputElement).value);
     $('fx-val').textContent=Math.round(value*100)+'%';
-    if(echoSend)echoSend.gain.value=fxEnabled?value:0;
+    mixer?.setEcho(fxEnabled, value);
   });
   $('fx-toggle').addEventListener('click',()=>{
     fxEnabled=!fxEnabled;
@@ -433,7 +398,7 @@ function bindMixer(): void {
     b.classList.toggle('on',fxEnabled);
     b.textContent=fxEnabled?'FX ON':'FX OFF';
     b.setAttribute('aria-pressed',String(fxEnabled));
-    if(echoSend)echoSend.gain.value=fxEnabled?Number(($('fx-wet') as HTMLInputElement).value):0;
+    mixer?.setEcho(fxEnabled, Number(($('fx-wet') as HTMLInputElement).value));
     flash('Echo FX '+(fxEnabled?'włączony.':'wyłączony.'));
   });
 }
@@ -472,12 +437,49 @@ function bindKeys(): void {
     else if(/^[1-8]$/.test(ev.key)){void usePad('left',Number(ev.key)-1,ev.shiftKey);}
   });
 }
+ function bindRecording(): void {
+  const button = $('rec-button') as HTMLButtonElement;
+  button.addEventListener('click', async () => {
+    if (!mixer) { flash('Audio engine nie jest dostępny.'); return; }
+    button.disabled = true;
+    try {
+      if (mixer.isRecording) {
+        const blob = await mixer.stopRecording();
+        const extension = blob.type.includes('mp4') ? 'm4a' : 'webm';
+        const objectUrl = URL.createObjectURL(blob);
+        const download = document.createElement('a');
+        download.href = objectUrl;
+        download.download = 'DJ-ZET-MIX-' + new Date().toISOString().replace(/[:.]/g, '-') + '.' + extension;
+        document.body.append(download);
+        download.click();
+        download.remove();
+        window.setTimeout(() => URL.revokeObjectURL(objectUrl), 10000);
+        button.classList.remove('is-recording');
+        button.setAttribute('aria-pressed', 'false');
+        button.textContent = '● REC MIX';
+        flash('Nagranie miksu gotowe: ' + Math.round(blob.size / 1024) + ' kB. Plik został przygotowany do pobrania.');
+      } else {
+        if (!(await startAudio())) return;
+        mixer.startRecording();
+        button.classList.add('is-recording');
+        button.setAttribute('aria-pressed', 'true');
+        button.textContent = '■ STOP REC';
+        flash('Nagrywanie miksu jest aktywne. Ponownie kliknij STOP REC, aby zapisać.');
+      }
+    } catch (error) {
+      flash('Nagrywanie: ' + (error instanceof Error ? error.message : 'nieznany błąd'));
+    } finally {
+      button.disabled = false;
+    }
+  });
+}
+
 function boot(): void {
   createEngine();
   renderChannels();
   renderDeck('left');
   renderDeck('right');
-  bindDeck('left');bindDeck('right');bindMixer();bindKeys();
+  bindDeck('left');bindDeck('right');bindMixer();bindKeys();bindRecording();
   $('help-button').addEventListener('click',()=>{
     const guide=$('guide');
     guide.toggleAttribute('hidden');
@@ -488,5 +490,6 @@ function boot(): void {
 window.addEventListener('pagehide',()=>{
   cancelAnimationFrame(playheadRaf);
   decks.forEach(d=>{d.audio.pause();if(d.url)URL.revokeObjectURL(d.url);});
+  mixer?.dispose();
 });
 boot();
