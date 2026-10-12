@@ -1,4 +1,4 @@
-import { equalPower, filterParameters, finiteClamp, normalizeEQ, normalizeVolume, safeEchoWet } from './dsp';
+import { equalPower, filterParameters, normalizeEQ, normalizeVolume, safeEchoWet } from './dsp.ts';
 
 export type DeckId = 1 | 2 | 3 | 4;
 export type EQBand = 'low' | 'mid' | 'high';
@@ -28,7 +28,10 @@ export class DJMixerEngine {
   private recorder: MediaRecorder | null = null;
   private recordedChunks: Blob[] = [];
 
-  constructor(private readonly context: AudioContext) {
+  private readonly context: AudioContext;
+
+  constructor(context: AudioContext) {
+    this.context = context;
     this.master = context.createGain();
     this.master.gain.value = 0.85;
     this.aBus = context.createGain();
