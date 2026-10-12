@@ -1,0 +1,34 @@
+name: DJ ZET Audio Engine CI
+
+on:
+  push:
+    branches:
+      - feature/djzet-flx10-engine
+    paths:
+      - 'preview/**'
+      - '.github/workflows/djzet-audio-ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audio-engine:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    defaults:
+      run:
+        working-directory: preview
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Zainstaluj zależności
+        run: npm install --no-audit --no-fund
+      - name: TypeScript strict
+        run: npm run typecheck
+      - name: Testy silnika audio
+        run: npm run test:audio
+      - name: Build frontendu
+        run: npm run build
